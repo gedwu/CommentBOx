@@ -10756,16 +10756,14 @@ summary {
 
 ul.actions {
   position: absolute;
-  right: 1em;
-  top: 1.2em;
+  right: 2em;
+  top: 1.8em;
   display: none;
-  font-size: 12px;
 }
 
 ul.actions a {
   text-decoration: none !important;
   color: rgba(0, 0, 0, 0.6);
-  font-size: 11px;
 }
 
 .list-group-item {
@@ -10854,5 +10852,9 @@ form {
 
 .form-control:focus {
   border-color: #03a1f1 !important;
+}
+
+.delete-icon-size {
+  font-size: 18px;
 }
 

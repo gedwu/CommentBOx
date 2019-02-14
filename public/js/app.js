@@ -1810,6 +1810,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -37014,9 +37015,10 @@ var render = function() {
                             }
                           },
                           [
-                            _vm._v(
-                              "\n                            Delete\n                    "
-                            )
+                            _c("i", {
+                              staticClass:
+                                "fa fa-trash-o fa-stack-1x delete-icon-size"
+                            })
                           ]
                         )
                       ])
@@ -37094,7 +37096,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("h6", { staticStyle: { "margin-bottom": "1em" } }, [
-      _vm._v(" Frontend Task "),
+      _vm._v(" Frontend Task\n        "),
       _c("small", { staticClass: "text-muted" }, [
         _vm._v("for BitDegree Candidates")
       ])

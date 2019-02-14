@@ -100,16 +100,16 @@ summary{
 
 ul.actions {
   position: absolute;
-  right: 1em;
-  top: 1.2em;
+  right: 2em;
+  top: 1.8em;
   display: none;
-  font-size: 12px;
+  //font-size: 12px;
 }
 
 ul.actions a{
   text-decoration:none !important;
   color: rgba(0,0,0, 0.6);
-  font-size: 11px;
+  //font-size: 11px;
 }
 
 
@@ -200,4 +200,8 @@ form{
 
 .form-control:focus{
   border-color: rgba(3, 161, 241, 1) !important;
+}
+
+.delete-icon-size {
+  font-size: 18px;
 }

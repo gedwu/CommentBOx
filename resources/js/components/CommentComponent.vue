@@ -1,6 +1,8 @@
 <template>
     <div class="col-md-6 offset-md-3" style="margin-top:2em;">
-        <h6 style="margin-bottom:1em;"> Frontend Task <small class="text-muted">for BitDegree Candidates</small> </h6>
+        <h6 style="margin-bottom:1em;"> Frontend Task
+            <small class="text-muted">for BitDegree Candidates</small>
+        </h6>
         <div class="card paper">
             <details v-if="Number(total)>commentNumberToDisplay">
                 <summary style="padding:1em;" v-on:click="fetchMoreComments()">
@@ -18,14 +20,13 @@
                       </span>
 
                     <ul class="list-inline actions" href="#">
-                        <!--@todo: Add Delete icon on hover-->
                         <!--<li><a class="edit" href="#" title="Edit comment">Editt</a></li>-->
 
                         <li class="">
                             <a @click="deleteComment(item.id)" href="#" title="Delete comment" >
                                 <!--@todo: add icon-->
-                            <!--<i class="fas fa-times"></i>-->
-                                Delete
+                            <i class="fa fa-trash-o fa-stack-1x delete-icon-size"></i>
+
                         </a>
                         </li>
                     </ul>
