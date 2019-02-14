@@ -15,9 +15,9 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($number = 4)
     {
-        $comments = Comment::orderBy('created_at', 'desc')->paginate(3);
+        $comments = Comment::orderBy('created_at', 'desc')->paginate($number);
 
         return CommentResource::collection($comments);
     }
