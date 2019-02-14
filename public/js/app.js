@@ -1839,7 +1839,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1847,10 +1846,11 @@ __webpack_require__.r(__webpack_exports__);
       image: 'http://lorempixel.com/50/50/people/',
       list: [],
       errors: [],
+      success: false,
       total: 0,
       comment: {
         id: '',
-        user_id: '',
+        user_id: this.$userId,
         text: '',
         author: '',
         created_at: '',
@@ -1860,6 +1860,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     console.log('Comments component loaded');
+    console.log('Curent user ID: ' + this.$userId);
     this.fetchCommentsList();
   },
   methods: {
@@ -1873,6 +1874,30 @@ __webpack_require__.r(__webpack_exports__);
         _this.total = response.data['meta'].total;
       }).catch(function (error) {
         console.log(error);
+      });
+    },
+    createComment: function createComment() {
+      console.log('Creating Comment');
+      this.errors = [];
+      var self = this;
+      var params = Object.assign({}, self.comment);
+      axios.post('api/comment', params).then(function (response) {
+        if (response.status == 200) {
+          console.log(response.data.success);
+          self.success = response.data.success;
+        }
+      }).then(function () {
+        self.comment.author = '';
+        self.comment.text = '';
+        self.comment.visible = 1;
+        self.fetchCommentsList();
+      }).catch(function (error) {
+        if (error.response.status == 422) {
+          self.errors = error.response.data.errors;
+          console.log(error.response.data.errors);
+        } else {
+          console.log(error);
+        }
       });
     }
   }
@@ -36945,7 +36970,7 @@ var render = function() {
               ])
             : _vm._e(),
           _vm._v(" "),
-          _vm._l(_vm.list, function(comment) {
+          _vm._l(_vm.list.slice().reverse(), function(item) {
             return _c(
               "ul",
               { staticClass: "list-group", attrs: { id: "lastComment" } },
@@ -36953,18 +36978,18 @@ var render = function() {
                 _c("li", { staticClass: "list-group-item" }, [
                   _c("span", { staticClass: "circle" }, [
                     _c("img", {
-                      attrs: { src: _vm.image + comment.user_id, alt: "user" }
+                      attrs: { src: _vm.image + item.user_id, alt: "user" }
                     })
                   ]),
                   _vm._v(" "),
                   _c("span", { staticClass: "title" }, [
                     _c("a", { attrs: { href: "#" } }, [
-                      _vm._v(_vm._s(comment.author) + " ")
+                      _vm._v(_vm._s(item.author) + " ")
                     ]),
                     _vm._v(" "),
                     _c("time", [_vm._v(" 6:00 PM")]),
                     _vm._v(" "),
-                    _c("p", [_vm._v(_vm._s(comment.text))])
+                    _c("p", [_vm._v(_vm._s(item.text))])
                   ]),
                   _vm._v(" "),
                   _vm._m(2, true)
@@ -36973,7 +36998,61 @@ var render = function() {
             )
           }),
           _vm._v(" "),
-          _vm._m(3)
+          _c(
+            "form",
+            {
+              attrs: { action: "#" },
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.createComment()
+                }
+              }
+            },
+            [
+              _c("fieldset", { staticClass: "form-group" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.comment.text,
+                      expression: "comment.text"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "text", placeholder: "Add a comment" },
+                  domProps: { value: _vm.comment.text },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.comment, "text", $event.target.value)
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-sm btn-success",
+                  attrs: { type: "submit" }
+                },
+                [_vm._v("Post")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-sm btn-secondary",
+                  attrs: { type: "button" }
+                },
+                [_vm._v("Cancel")]
+              )
+            ]
+          )
         ],
         2
       )
@@ -37101,35 +37180,6 @@ var staticRenderFns = [
         ])
       ]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("form", [
-      _c("fieldset", { staticClass: "form-group" }, [
-        _c("input", {
-          staticClass: "form-control",
-          attrs: {
-            type: "text",
-            id: "exampleInputEmail1",
-            placeholder: "Add a comment"
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _c(
-        "button",
-        { staticClass: "btn btn-sm btn-success", attrs: { type: "button" } },
-        [_vm._v("Post")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        { staticClass: "btn btn-sm btn-secondary", attrs: { type: "button" } },
-        [_vm._v("Cancel")]
-      )
-    ])
   }
 ]
 render._withStripped = true
@@ -49198,6 +49248,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
+Vue.prototype.$userId = document.querySelector("meta[name='user-id']").getAttribute('content');
 Vue.component('comments', __webpack_require__(/*! ./components/CommentComponent.vue */ "./resources/js/components/CommentComponent.vue").default);
 var app = new Vue({
   el: '#app'

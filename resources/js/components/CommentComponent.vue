@@ -43,14 +43,14 @@
                     </li>
                 </ul>
             </details>
-            <ul id="lastComment" class="list-group" v-for="comment in list">
+            <ul id="lastComment" class="list-group" v-for="item in list.slice().reverse()">
                 <li class="list-group-item">
                       <span class="circle">
-                          <img v-bind:src="image + comment.user_id" alt="user">
+                          <img v-bind:src="image + item.user_id" alt="user">
                       </span>
                     <span class="title">
-                          <a href="#">{{comment.author}} </a> <time> 6:00 PM</time>
-                            <p>{{comment.text}}</p>
+                          <a href="#">{{item.author}} </a> <time> 6:00 PM</time>
+                            <p>{{item.text}}</p>
                       </span>
 
                     <ul class="list-inline actions" href="#">
@@ -60,19 +60,18 @@
                     </ul>
                 </li>
             </ul>
-            <form>
+            <form action="#" @submit.prevent="createComment()">
                 <fieldset class="form-group">
-                    <input type="text"
+                    <input v-model="comment.text"
+                            type="text"
                            class="form-control"
-                           id="exampleInputEmail1"
                            placeholder="Add a comment">
                 </fieldset>
-                <button type="button" class="btn btn-sm btn-success">Post</button>
+                <button type="submit" class="btn btn-sm btn-success">Post</button>
                 <button type="button" class="btn btn-sm btn-secondary">Cancel</button>
             </form>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -83,10 +82,11 @@
                 image:'http://lorempixel.com/50/50/people/',
                 list:[],
                 errors: [],
+                success: false,
                 total:0,
                 comment: {
                     id:'',
-                    user_id:'',
+                    user_id:this.$userId,
                     text:'',
                     author:'',
                     created_at:'',
@@ -96,6 +96,7 @@
         },
         mounted: function(){
             console.log('Comments component loaded');
+            console.log('Curent user ID: '+this.$userId);
             this.fetchCommentsList();
         },
         methods:{
@@ -110,7 +111,34 @@
                     .catch((error) => {
                         console.log(error);
                     });
-            }
+            },
+            createComment: function(){
+                console.log('Creating Comment');
+                this.errors = [];
+                let self = this;
+                let params = Object.assign({}, self.comment);
+                axios.post('api/comment', params)
+                    .then(function (response) {
+                        if (response.status == 200) {
+                            console.log(response.data.success);
+                            self.success = response.data.success;
+                        }
+                    })
+                    .then(function(){
+                        self.comment.author = '';
+                        self.comment.text = '';
+                        self.comment.visible = 1;
+                        self.fetchCommentsList();
+                    })
+                    .catch(function(error){
+                        if (error.response.status == 422) {
+                            self.errors = error.response.data.errors;
+                            console.log(error.response.data.errors);
+                        } else {
+                            console.log(error);
+                        }
+                    })
+            },
         }
     }
 </script>

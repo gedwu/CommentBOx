@@ -21,7 +21,7 @@ class Comment extends JsonResource
             'author' => $this->user->name,
             'text' => $this->text,
             'created_at' => $this->created_at,
-            'visible' => $this->visible
+            'visible' => $this->visible,
         ];
     }
 }

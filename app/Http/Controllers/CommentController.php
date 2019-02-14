@@ -6,7 +6,7 @@ use App\Comment;
 use App\Http\Resources\Comment as CommentResource;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -17,8 +17,7 @@ class CommentController extends Controller
      */
     public function index($number = 4)
     {
-        $comments = Comment::orderBy('created_at', 'desc')->paginate($number);
-
+        $comments = Comment::orderBy('created_at', 'desc')->take($number)->get();
         return CommentResource::collection($comments);
     }
 
@@ -40,7 +39,14 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $comment = new Comment();
+        $comment->text = $request->input('text');
+        $comment->user_id = $request->input('user_id');
+
+        $return = ['success' => 'Comment Created'];
+        if($comment->save()) {
+            return response()->json($return);
+        }
     }
 
     /**
