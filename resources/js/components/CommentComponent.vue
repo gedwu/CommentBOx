@@ -13,7 +13,7 @@
                           <img v-bind:src="image + item.user_id" alt="user">
                       </span>
                     <span class="title">
-                          <a href="#">{{item.author}} </a> <time> 6:00 PM</time>
+                          <a href="#">{{item.author}} </a> <time> {{item.created_at}}</time>
                             <p>{{item.text}}</p>
                       </span>
 

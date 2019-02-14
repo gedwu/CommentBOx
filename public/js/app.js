@@ -36977,7 +36977,7 @@ var render = function() {
                       _vm._v(_vm._s(item.author) + " ")
                     ]),
                     _vm._v(" "),
-                    _c("time", [_vm._v(" 6:00 PM")]),
+                    _c("time", [_vm._v(" " + _vm._s(item.created_at))]),
                     _vm._v(" "),
                     _c("p", [_vm._v(_vm._s(item.text))])
                   ]),
