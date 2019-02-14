@@ -15,8 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Comment extends Model
 {
-    public function comment()
+    public function user()
     {
-        return $this->hasOne('App\Comment');
+        return $this->hasOne('App\User');
     }
 }
