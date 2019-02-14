@@ -18,7 +18,8 @@ class CommentController extends Controller
     public function index($number = 4)
     {
         $comments = Comment::orderBy('created_at', 'desc')->take($number)->get();
-        return CommentResource::collection($comments);
+        $commentsCount = Comment::count();
+        return CommentResource::collection($comments)->additional(['total_comments' => $commentsCount]);
     }
 
     /**

@@ -96,6 +96,7 @@
         },
         mounted: function(){
             console.log('Comments component loaded');
+            // @todo: delete this
             console.log('Curent user ID: '+this.$userId);
             this.fetchCommentsList();
         },
@@ -106,7 +107,7 @@
                 axios.get(this.url)
                     .then((response) => {
                         this.list = response.data['data'];
-                        this.total = response.data['meta'].total;
+                        this.total = response.data['total_comments'];
                     })
                     .catch((error) => {
                         console.log(error);

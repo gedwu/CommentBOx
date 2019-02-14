@@ -1859,7 +1859,8 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mounted: function mounted() {
-    console.log('Comments component loaded');
+    console.log('Comments component loaded'); // @todo: delete this
+
     console.log('Curent user ID: ' + this.$userId);
     this.fetchCommentsList();
   },
@@ -1871,7 +1872,7 @@ __webpack_require__.r(__webpack_exports__);
       var $this = this;
       axios.get(this.url).then(function (response) {
         _this.list = response.data['data'];
-        _this.total = response.data['meta'].total;
+        _this.total = response.data['total_comments'];
       }).catch(function (error) {
         console.log(error);
       });
