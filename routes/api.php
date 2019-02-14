@@ -22,3 +22,5 @@ Route::get('comments/{id}', 'CommentController@index');
 
 Route::post('comment', 'CommentController@store');
 
+Route::delete('comment/{id}', 'CommentController@destroy');
+

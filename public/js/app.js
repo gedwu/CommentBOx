@@ -1832,8 +1832,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     console.log('Comments component loaded'); // @todo: delete this
+    // console.log('Curent user ID: '+this.$userId);
 
-    console.log('Curent user ID: ' + this.$userId);
     this.fetchCommentsList();
   },
   methods: {
@@ -1875,6 +1875,19 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           console.log(error);
         }
+      });
+    },
+    deleteComment: function deleteComment(id) {
+      var self = this;
+      console.log('Deleting comment with id: ' + id);
+      axios.delete('api/comment/' + id).then(function (response) {
+        if (response.status == 200) {
+          console.log(response.data.success);
+          self.success = response.data.success;
+          self.fetchCommentsList();
+        }
+      }).catch(function (error) {
+        console.log(error);
       });
     }
   }
@@ -36982,7 +36995,33 @@ var render = function() {
                     _c("p", [_vm._v(_vm._s(item.text))])
                   ]),
                   _vm._v(" "),
-                  _vm._m(1, true)
+                  _c(
+                    "ul",
+                    {
+                      staticClass: "list-inline actions",
+                      attrs: { href: "#" }
+                    },
+                    [
+                      _c("li", {}, [
+                        _c(
+                          "a",
+                          {
+                            attrs: { href: "#", title: "Delete comment" },
+                            on: {
+                              click: function($event) {
+                                return _vm.deleteComment(item.id)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                            Delete\n                    "
+                            )
+                          ]
+                        )
+                      ])
+                    ]
+                  )
                 ])
               ]
             )
@@ -37060,22 +37099,6 @@ var staticRenderFns = [
         _vm._v("for BitDegree Candidates")
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "ul",
-      { staticClass: "list-inline actions", attrs: { href: "#" } },
-      [
-        _c("li", {}, [
-          _c("a", { attrs: { href: "#", title: "Delete comment" } }, [
-            _vm._v("\n                            Delete\n                    ")
-          ])
-        ])
-      ]
-    )
   }
 ]
 render._withStripped = true

@@ -22,7 +22,7 @@
                         <!--<li><a class="edit" href="#" title="Edit comment">Editt</a></li>-->
 
                         <li class="">
-                            <a class="" href="#" title="Delete comment">
+                            <a @click="deleteComment(item.id)" href="#" title="Delete comment" >
                                 <!--@todo: add icon-->
                             <!--<i class="fas fa-times"></i>-->
                                 Delete
@@ -69,7 +69,7 @@
         mounted: function(){
             console.log('Comments component loaded');
             // @todo: delete this
-            console.log('Curent user ID: '+this.$userId);
+            // console.log('Curent user ID: '+this.$userId);
             this.fetchCommentsList();
         },
         methods:{
@@ -116,6 +116,21 @@
                         }
                     })
             },
+            deleteComment: function(id){
+                let self = this;
+                console.log('Deleting comment with id: '+id);
+                axios.delete('api/comment/'+id)
+                    .then(function (response) {
+                        if (response.status == 200) {
+                            console.log(response.data.success);
+                            self.success = response.data.success;
+                            self.fetchCommentsList();
+                        }
+                    })
+                    .catch(function(error){
+                        console.log(error);
+                    });
+            }
         }
     }
 </script>

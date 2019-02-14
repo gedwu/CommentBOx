@@ -19,17 +19,9 @@ class CommentController extends Controller
     {
         $comments = Comment::orderBy('created_at', 'desc')->take($number)->get();
         $commentsCount = Comment::count();
-        return CommentResource::collection($comments)->additional(['total_comments' => $commentsCount]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return CommentResource::collection(
+            $comments)->additional(['total_comments' => $commentsCount]
+        );
     }
 
     /**
@@ -40,6 +32,10 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = $this->validate($request, [
+            'text' => 'required|max:200',
+        ]);
+
         $comment = new Comment();
         $comment->text = $request->input('text');
         $comment->user_id = $request->input('user_id');
@@ -51,47 +47,18 @@ class CommentController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Comment $comment)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Comment $comment)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Comment $comment)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Comment $comment)
+    public function destroy($id)
     {
-        //
+        $comment = Comment::findOrFail($id);
+
+        $return = ['success' => 'Comment Deleted'];
+        if ($comment->delete()) {
+            return response()->json($return);
+        }
     }
 }
