@@ -1810,44 +1810,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      url: 'api/comments',
+      url: 'api/comments/',
       image: 'http://lorempixel.com/50/50/people/',
       list: [],
       errors: [],
       success: false,
       total: 0,
+      commentNumberToDisplay: 4,
       comment: {
         id: '',
         user_id: this.$userId,
@@ -1870,12 +1842,16 @@ __webpack_require__.r(__webpack_exports__);
 
       console.log('Fetching Comments');
       var $this = this;
-      axios.get(this.url).then(function (response) {
+      axios.get(this.url + this.commentNumberToDisplay).then(function (response) {
         _this.list = response.data['data'];
         _this.total = response.data['total_comments'];
       }).catch(function (error) {
         console.log(error);
       });
+    },
+    fetchMoreComments: function fetchMoreComments() {
+      this.commentNumberToDisplay += 20;
+      this.fetchCommentsList();
     },
     createComment: function createComment() {
       console.log('Creating Comment');
@@ -36961,13 +36937,26 @@ var render = function() {
         "div",
         { staticClass: "card paper" },
         [
-          Number(_vm.total) > 4
+          Number(_vm.total) > _vm.commentNumberToDisplay
             ? _c("details", [
-                _c("summary", { staticStyle: { padding: "1em" } }, [
-                  _vm._v(_vm._s(Number(_vm.total) - 4) + " earlier comments")
-                ]),
-                _vm._v(" "),
-                _vm._m(1)
+                _c(
+                  "summary",
+                  {
+                    staticStyle: { padding: "1em" },
+                    on: {
+                      click: function($event) {
+                        return _vm.fetchMoreComments()
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                " +
+                        _vm._s(Number(_vm.total) - _vm.commentNumberToDisplay) +
+                        " earlier comments\n            "
+                    )
+                  ]
+                )
               ])
             : _vm._e(),
           _vm._v(" "),
@@ -36993,7 +36982,7 @@ var render = function() {
                     _c("p", [_vm._v(_vm._s(item.text))])
                   ]),
                   _vm._v(" "),
-                  _vm._m(2, true)
+                  _vm._m(1, true)
                 ])
               ]
             )
@@ -37076,108 +37065,14 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("ul", { staticClass: "list-group" }, [
-      _c("li", { staticClass: "list-group-item " }, [
-        _c("span", { staticClass: "circle" }, [
-          _c("img", {
-            attrs: { src: "http://lorempixel.com/50/50/people/6", alt: "user" }
-          })
-        ]),
-        _vm._v(" "),
-        _c("span", { staticClass: "title" }, [
-          _c("a", { attrs: { href: "#" } }, [_vm._v("Abbey Christensen")]),
-          _vm._v(" "),
-          _c("time", [_vm._v(" 5:09 PM")]),
-          _vm._v(" "),
-          _c("p", [_vm._v("Can’t wait to see this movie.")])
-        ]),
-        _vm._v(" "),
-        _c("ul", { staticClass: "actions", attrs: { href: "#" } }, [
-          _c("li", [
-            _c("a", { staticClass: "reply", attrs: { href: "#" } }, [
-              _vm._v("Reply")
-            ])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("li", { staticClass: "list-group-item" }, [
-        _c("span", { staticClass: "circle" }, [
-          _c("img", {
-            attrs: { src: "http://lorempixel.com/50/50/people/7", alt: "user" }
-          })
-        ]),
-        _vm._v(" "),
-        _c("span", { staticClass: "title" }, [
-          _c("a", { attrs: { href: "#" } }, [_vm._v("Ali Connors")]),
-          _vm._v(" "),
-          _c("time", [_vm._v(" 5:15 PM")]),
-          _vm._v(" "),
-          _c("p", [_vm._v("Mee too.")])
-        ]),
-        _vm._v(" "),
-        _c("ul", { staticClass: "actions", attrs: { href: "#" } }, [
-          _c("li", [
-            _c("a", { staticClass: "reply", attrs: { href: "#" } }, [
-              _vm._v("Reply")
-            ])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("li", { staticClass: "list-group-item" }, [
-        _c("span", { staticClass: "circle" }, [
-          _c("img", {
-            attrs: { src: "http://lorempixel.com/50/50/people/8", alt: "user" }
-          })
-        ]),
-        _vm._v(" "),
-        _c("span", { staticClass: "title" }, [
-          _c("a", { attrs: { href: "#" } }, [_vm._v("Peter Carlsson")]),
-          _vm._v(" "),
-          _c("time", [_vm._v(" 5:30 PM")]),
-          _vm._v(" "),
-          _c("p", [
-            _vm._v(
-              " I thought it was a good movie. The slow motion was a tad excessive at times, but overall it was good! I'm love it ;) "
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c("ul", { staticClass: "actions", attrs: { href: "#" } }, [
-          _c("li", [
-            _c("a", { staticClass: "reply", attrs: { href: "#" } }, [
-              _vm._v("Reply")
-            ])
-          ])
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c(
       "ul",
       { staticClass: "list-inline actions", attrs: { href: "#" } },
       [
-        _c("li", [
-          _c(
-            "a",
-            {
-              staticClass: "edit",
-              attrs: { href: "#", title: "Edit comment" }
-            },
-            [_vm._v("EditX")]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "roff" }, [
-          _c("a", {
-            staticClass: "delete",
-            attrs: { href: "#", title: "DeleteQ" }
-          })
+        _c("li", {}, [
+          _c("a", { attrs: { href: "#", title: "Delete comment" } }, [
+            _vm._v("\n                            Delete\n                    ")
+          ])
         ])
       ]
     )

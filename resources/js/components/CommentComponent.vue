@@ -2,46 +2,10 @@
     <div class="col-md-6 offset-md-3" style="margin-top:2em;">
         <h6 style="margin-bottom:1em;"> Frontend Task <small class="text-muted">for BitDegree Candidates</small> </h6>
         <div class="card paper">
-            <details v-if="Number(total)>4">
-                <summary style="padding:1em;">{{Number(total)-4}} earlier comments</summary>
-                <ul class="list-group">
-                    <li class="list-group-item ">
-                              <span class="circle">
-                                  <img src="http://lorempixel.com/50/50/people/6" alt="user">
-                              </span>
-                        <span class="title">
-                                  <a href="#">Abbey Christensen</a> <time> 5:09 PM</time>
-                                    <p>Can’t wait to see this movie.</p>
-                              </span>
-                        <ul class="actions" href="#">
-                            <li><a class="reply" href="#">Reply</a></li>
-                        </ul>
-                    </li>
-                    <li class="list-group-item">
-                          <span class="circle">
-                              <img src="http://lorempixel.com/50/50/people/7" alt="user">
-                          </span>
-                        <span class="title">
-                              <a href="#">Ali Connors</a> <time> 5:15 PM</time>
-                                <p>Mee too.</p>
-                          </span>
-                        <ul class="actions" href="#">
-                            <li><a class="reply" href="#">Reply</a></li>
-                        </ul>
-                    </li>
-                    <li class="list-group-item">
-                          <span class="circle">
-                              <img src="http://lorempixel.com/50/50/people/8" alt="user">
-                          </span>
-                        <span class="title">
-                              <a href="#">Peter Carlsson</a> <time> 5:30 PM</time>
-                                <p> I thought it was a good movie. The slow motion was a tad excessive at times, but overall it was good! I'm love it ;) </p>
-                          </span>
-                        <ul class="actions" href="#">
-                            <li><a class="reply" href="#">Reply</a></li>
-                        </ul>
-                    </li>
-                </ul>
+            <details v-if="Number(total)>commentNumberToDisplay">
+                <summary style="padding:1em;" v-on:click="fetchMoreComments()">
+                    {{Number(total)-commentNumberToDisplay}} earlier comments
+                </summary>
             </details>
             <ul id="lastComment" class="list-group" v-for="item in list.slice().reverse()">
                 <li class="list-group-item">
@@ -55,8 +19,15 @@
 
                     <ul class="list-inline actions" href="#">
                         <!--@todo: Add Delete icon on hover-->
-                        <li><a class="edit" href="#" title="Edit comment">EditX</a></li>
-                        <li class="roff"><a class="delete" href="#" title="DeleteQ"></a></li>
+                        <!--<li><a class="edit" href="#" title="Edit comment">Editt</a></li>-->
+
+                        <li class="">
+                            <a class="" href="#" title="Delete comment">
+                                <!--@todo: add icon-->
+                            <!--<i class="fas fa-times"></i>-->
+                                Delete
+                        </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -78,12 +49,13 @@
     export default {
         data: function(){
             return {
-                url:'api/comments',
+                url:'api/comments/',
                 image:'http://lorempixel.com/50/50/people/',
                 list:[],
                 errors: [],
                 success: false,
                 total:0,
+                commentNumberToDisplay:4,
                 comment: {
                     id:'',
                     user_id:this.$userId,
@@ -104,7 +76,7 @@
             fetchCommentsList: function(){
                 console.log('Fetching Comments');
                 let $this = this;
-                axios.get(this.url)
+                axios.get(this.url+this.commentNumberToDisplay)
                     .then((response) => {
                         this.list = response.data['data'];
                         this.total = response.data['total_comments'];
@@ -112,6 +84,10 @@
                     .catch((error) => {
                         console.log(error);
                     });
+            },
+            fetchMoreComments:function(){
+                this.commentNumberToDisplay += 20;
+                this.fetchCommentsList();
             },
             createComment: function(){
                 console.log('Creating Comment');
