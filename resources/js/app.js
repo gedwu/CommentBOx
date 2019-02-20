@@ -11,3 +11,6 @@ Vue.component('comments', require('./components/CommentComponent.vue').default);
 const app = new Vue({
     el: '#app'
 });
+
+
+global.app = app;

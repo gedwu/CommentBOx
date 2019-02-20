@@ -13,9 +13,11 @@
                 </summary>
             </details>
 
+            <div ref="component-up">Virsus</div>
+
             <!--@todo: change id to class-->
             <ul id="lastComment" class="list-group" v-for="(item, index) in list.slice().reverse()">
-                <li class="list-group-item" v-bind:id="'comment-'+item.id">
+                <li class="list-group-item" :ref="'comment-'+item.id">
                       <span class="circle">
                           <img v-bind:src="image + item.user_id" alt="user">
                       </span>
@@ -24,14 +26,13 @@
                         <!--@todo:styles-->
                             <p style="padding-right: 20px;">{{item.text}} </p>
                         <span>
-                            <a href="#component-form" @click="prepareReply(item)">Reply</a>
+                            <a @click="prepareReply(item, index)">Reply</a>
                         </span>
                         <!--@todo:-->
-                        <span v-if="item.replies_count" class="float-right" @click="getReplies(item.id, index)">
+                        <span v-if="item.replies_count" class="float-right" @click="fetchReplies(item.id, index)">
                             (View {{item.replies_count}} Replies)
                         </span>
                       </span>
-
 
                     <ul class="list-inline actions">
                         <li>
@@ -42,7 +43,7 @@
                     </ul>
                     <div v-if="item.replies.length != 0">
                         <ul class="list-group" v-for="reply in item.replies">
-                            <li class="list-group-item">
+                            <li class="list-group-item" :ref="'reply-'+reply.id">
                                 <span class="reply-img circle">
                                     <img v-bind:src="image + reply.user_id" alt="user">
                                 </span>
@@ -56,6 +57,7 @@
 
                 </li>
             </ul>
+            <div id="apacia" ref="apacia">Apacia</div>
             <form action="#" @submit.prevent="replying ? createReply() : createComment()">
                 <fieldset class="form-group">
                     <input v-model="comment.text"
@@ -66,6 +68,7 @@
                 </fieldset>
                 <button type="submit" class="btn btn-sm btn-success">{{replying ? 'Reply' : 'Comment'}}</button>
                 <button type="button" class="btn btn-sm btn-secondary">Cancel</button>
+                <button @click="setFocus()" type="button" class="btn btn-sm btn-danger">Focus</button>
             </form>
         </div>
     </div>
@@ -81,9 +84,12 @@
                 errors: [],
                 success: false,
                 total:0,
-                commentNumberToDisplay:4,
+                selectedIndex: null,
+                // @todo: change to 4 after testing
+                commentNumberToDisplay:10,
                 replying:false,
                 focusToComment:0,
+                focusToReply:0,
                 reply: {
                     user_id:this.$userId,
                     comment_id:'',
@@ -100,21 +106,18 @@
             }
         },
         mounted: function(){
-            console.log('Comments component loaded');
             this.fetchCommentsList();
-            if (this.focusToComment) {
-                document.getElementById('comment-'.this.focusToComment).focus();
-            }
         },
+
         methods:{
             fetchCommentsList: function(){
                 console.log('Fetching Comments');
-                let $this = this;
+                // @todo
+                // let $this = this;
 
                 axios.get(this.url+this.commentNumberToDisplay)
                     .then((response) => {
                         this.list = response.data['data'];
-                        // console.log(response.data['data']);
                         this.total = response.data['total_comments'];
                     })
                     .catch((error) => {
@@ -166,21 +169,26 @@
                         console.log(error);
                     });
             },
-            prepareReply: function(comment) {
+            prepareReply: function(comment, index) {
                 document.getElementById('component-form').focus();
                 this.replying = true;
+                this.selectedIndex = index;
                 this.reply.comment_id = comment.id;
             },
             createReply: function() {
                 console.log('Creating Reply');
-
                 this.reply.text = this.comment.text;
                 let self = this;
                 let params = Object.assign({}, self.reply);
+                let commentId = self.reply.comment_id;
+                // @todo
+                // let index = self.commentNumberToDisplay-self.selectedIndex+1;
                 axios.post('api/reply', params)
                     .then(function (response) {
                         if (response.status == 200) {
                             console.log(response.data.success);
+                            self.focusToReply = response.data.reply_id;
+                            console.log('Focus to Reply with ID: '+self.focusToReply);
                             self.success = response.data.success;
                         }
                     })
@@ -190,46 +198,42 @@
                         self.reply.comment_id = '';
                         self.reply.text = '';
                         self.comment.text = '';
-                        self.fetchCommentsList();
-
+                        self.fetchReplies(commentId, self.selectedIndex);
+                        // self.scrollMeTo('reply-'+self.focusToReply);
+                        self.scrollMeTo('comment-'+self.focusToComment);
                     })
                     .catch(function(error){
-                        if (error.response.status == 422) {
-                            self.errors = error.response.data.errors;
-                            console.log(error.response.data.errors);
-                        } else {
-                            console.log(error);
-                        }
+                        console.log('pagavom error createReply()');
+                        console.log(error);
+                        // @todo
+                        // if (error.response.status == 422) {
+                        //     self.errors = error.response.data.errors;
+                        //     console.log(error.response.data.errors);
+                        // } else {
+                        //     console.log(error);
+                        // }
                     })
             },
             fetchReplies: function(comment_id, index) {
+                this.list[this.commentNumberToDisplay-index-1]['replies_count'] = 0;
                 console.log('Fetching Replies');
 
                 axios.get('api/replies/'+comment_id)
                     .then((response) => {
-                        // this.list[index]['replies'] = response.data['data'];
                         this.list[this.commentNumberToDisplay-index-1]['replies'] = response.data['data'];
-                        console.log(index);
-                        console.log(this.commentNumberToDisplay-index);
-
-                        // console.log(this.list[index]['replies']);
                     })
-                    // .then(function() {
-                //     document.getElementById('comment-'.comment_id).focus();
-                // })
                     .catch((error) => {
                         console.log(error);
                     });
             },
-            getReplies: function(comment_id, index) {
-                this.fetchReplies(comment_id, index);
-                this.focusToComment = comment_id;
-
-                // this.fetchCommentsList();
-                // @todo
-                // if (this.focusToComment) {
-                //     document.getElementById('comment-'.this.focusToComment).focus();
-                // }
+            setFocus: function() {
+                console.log('Focusing');
+                this.scrollMeTo('component-up');
+            },
+            scrollMeTo: function(refName) {
+                var element = this.$refs[refName];
+                var top = element.offsetTop;
+                window.scrollTo(0, top);
             }
         }
     }

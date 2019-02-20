@@ -27,8 +27,8 @@ class CommentRepliesController extends Controller
         $reply->comment_id = $request->input('comment_id');
         $reply->text = $request->input('text');
 
-        $return = ['success' => 'Reply Created'];
         if($reply->save()) {
+            $return = ['success' => 'Reply Created', 'reply_id' => $reply->id];
             return response()->json($return);
         }
     }

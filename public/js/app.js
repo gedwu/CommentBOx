@@ -1836,6 +1836,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1845,9 +1848,12 @@ __webpack_require__.r(__webpack_exports__);
       errors: [],
       success: false,
       total: 0,
-      commentNumberToDisplay: 4,
+      selectedIndex: null,
+      // @todo: change to 4 after testing
+      commentNumberToDisplay: 10,
       replying: false,
       focusToComment: 0,
+      focusToReply: 0,
       reply: {
         user_id: this.$userId,
         comment_id: '',
@@ -1864,22 +1870,17 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mounted: function mounted() {
-    console.log('Comments component loaded');
     this.fetchCommentsList();
-
-    if (this.focusToComment) {
-      document.getElementById('comment-'.this.focusToComment).focus();
-    }
   },
   methods: {
     fetchCommentsList: function fetchCommentsList() {
       var _this = this;
 
-      console.log('Fetching Comments');
-      var $this = this;
-      axios.get(this.url + this.commentNumberToDisplay).then(function (response) {
-        _this.list = response.data['data']; // console.log(response.data['data']);
+      console.log('Fetching Comments'); // @todo
+      // let $this = this;
 
+      axios.get(this.url + this.commentNumberToDisplay).then(function (response) {
+        _this.list = response.data['data'];
         _this.total = response.data['total_comments'];
       }).catch(function (error) {
         console.log(error);
@@ -1925,9 +1926,10 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
-    prepareReply: function prepareReply(comment) {
+    prepareReply: function prepareReply(comment, index) {
       document.getElementById('component-form').focus();
       this.replying = true;
+      this.selectedIndex = index;
       this.reply.comment_id = comment.id;
     },
     createReply: function createReply() {
@@ -1935,9 +1937,14 @@ __webpack_require__.r(__webpack_exports__);
       this.reply.text = this.comment.text;
       var self = this;
       var params = Object.assign({}, self.reply);
+      var commentId = self.reply.comment_id; // @todo
+      // let index = self.commentNumberToDisplay-self.selectedIndex+1;
+
       axios.post('api/reply', params).then(function (response) {
         if (response.status == 200) {
           console.log(response.data.success);
+          self.focusToReply = response.data.reply_id;
+          console.log('Focus to Reply with ID: ' + self.focusToReply);
           self.success = response.data.success;
         }
       }).then(function () {
@@ -1946,39 +1953,39 @@ __webpack_require__.r(__webpack_exports__);
         self.reply.comment_id = '';
         self.reply.text = '';
         self.comment.text = '';
-        self.fetchCommentsList();
+        self.fetchReplies(commentId, self.selectedIndex); // self.scrollMeTo('reply-'+self.focusToReply);
+
+        self.scrollMeTo('comment-' + self.focusToComment);
       }).catch(function (error) {
-        if (error.response.status == 422) {
-          self.errors = error.response.data.errors;
-          console.log(error.response.data.errors);
-        } else {
-          console.log(error);
-        }
+        console.log('pagavom error createReply()');
+        console.log(error); // @todo
+        // if (error.response.status == 422) {
+        //     self.errors = error.response.data.errors;
+        //     console.log(error.response.data.errors);
+        // } else {
+        //     console.log(error);
+        // }
       });
     },
     fetchReplies: function fetchReplies(comment_id, index) {
       var _this2 = this;
 
+      this.list[this.commentNumberToDisplay - index - 1]['replies_count'] = 0;
       console.log('Fetching Replies');
       axios.get('api/replies/' + comment_id).then(function (response) {
-        // this.list[index]['replies'] = response.data['data'];
         _this2.list[_this2.commentNumberToDisplay - index - 1]['replies'] = response.data['data'];
-        console.log(index);
-        console.log(_this2.commentNumberToDisplay - index); // console.log(this.list[index]['replies']);
-      }) // .then(function() {
-      //     document.getElementById('comment-'.comment_id).focus();
-      // })
-      .catch(function (error) {
+      }).catch(function (error) {
         console.log(error);
       });
     },
-    getReplies: function getReplies(comment_id, index) {
-      this.fetchReplies(comment_id, index);
-      this.focusToComment = comment_id; // this.fetchCommentsList();
-      // @todo
-      // if (this.focusToComment) {
-      //     document.getElementById('comment-'.this.focusToComment).focus();
-      // }
+    setFocus: function setFocus() {
+      console.log('Focusing');
+      this.scrollMeTo('component-up');
+    },
+    scrollMeTo: function scrollMeTo(refName) {
+      var element = this.$refs[refName];
+      var top = element.offsetTop;
+      window.scrollTo(0, top);
     }
   }
 });
@@ -37063,6 +37070,8 @@ var render = function() {
               ])
             : _vm._e(),
           _vm._v(" "),
+          _c("div", { ref: "component-up" }, [_vm._v("Virsus")]),
+          _vm._v(" "),
           _vm._l(_vm.list.slice().reverse(), function(item, index) {
             return _c(
               "ul",
@@ -37071,8 +37080,9 @@ var render = function() {
                 _c(
                   "li",
                   {
-                    staticClass: "list-group-item",
-                    attrs: { id: "comment-" + item.id }
+                    ref: "comment-" + item.id,
+                    refInFor: true,
+                    staticClass: "list-group-item"
                   },
                   [
                     _c("span", { staticClass: "circle" }, [
@@ -37096,10 +37106,9 @@ var render = function() {
                         _c(
                           "a",
                           {
-                            attrs: { href: "#component-form" },
                             on: {
                               click: function($event) {
-                                return _vm.prepareReply(item)
+                                return _vm.prepareReply(item, index)
                               }
                             }
                           },
@@ -37114,7 +37123,7 @@ var render = function() {
                               staticClass: "float-right",
                               on: {
                                 click: function($event) {
-                                  return _vm.getReplies(item.id, index)
+                                  return _vm.fetchReplies(item.id, index)
                                 }
                               }
                             },
@@ -37156,32 +37165,40 @@ var render = function() {
                           "div",
                           _vm._l(item.replies, function(reply) {
                             return _c("ul", { staticClass: "list-group" }, [
-                              _c("li", { staticClass: "list-group-item" }, [
-                                _c(
-                                  "span",
-                                  { staticClass: "reply-img circle" },
-                                  [
-                                    _c("img", {
-                                      attrs: {
-                                        src: _vm.image + reply.user_id,
-                                        alt: "user"
-                                      }
-                                    })
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c("span", { staticClass: "title" }, [
-                                  _c("a", { attrs: { href: "#" } }, [
-                                    _vm._v(" " + _vm._s(reply.author) + " ")
-                                  ]),
+                              _c(
+                                "li",
+                                {
+                                  ref: "reply-" + reply.id,
+                                  refInFor: true,
+                                  staticClass: "list-group-item"
+                                },
+                                [
+                                  _c(
+                                    "span",
+                                    { staticClass: "reply-img circle" },
+                                    [
+                                      _c("img", {
+                                        attrs: {
+                                          src: _vm.image + reply.user_id,
+                                          alt: "user"
+                                        }
+                                      })
+                                    ]
+                                  ),
                                   _vm._v(" "),
-                                  _c("time", [
-                                    _vm._v(" " + _vm._s(item.created_at))
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("p", [_vm._v(_vm._s(reply.text))])
-                                ])
-                              ])
+                                  _c("span", { staticClass: "title" }, [
+                                    _c("a", { attrs: { href: "#" } }, [
+                                      _vm._v(" " + _vm._s(reply.author) + " ")
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("time", [
+                                      _vm._v(" " + _vm._s(item.created_at))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("p", [_vm._v(_vm._s(reply.text))])
+                                  ])
+                                ]
+                              )
                             ])
                           }),
                           0
@@ -37192,6 +37209,10 @@ var render = function() {
               ]
             )
           }),
+          _vm._v(" "),
+          _c("div", { ref: "apacia", attrs: { id: "apacia" } }, [
+            _vm._v("Apacia")
+          ]),
           _vm._v(" "),
           _c(
             "form",
@@ -37249,6 +37270,20 @@ var render = function() {
                   attrs: { type: "button" }
                 },
                 [_vm._v("Cancel")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-sm btn-danger",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      return _vm.setFocus()
+                    }
+                  }
+                },
+                [_vm._v("Focus")]
               )
             ]
           )
@@ -49331,7 +49366,7 @@ module.exports = function(module) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
+/* WEBPACK VAR INJECTION */(function(global) {__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
@@ -49342,6 +49377,8 @@ Vue.component('comments', __webpack_require__(/*! ./components/CommentComponent.
 var app = new Vue({
   el: '#app'
 });
+global.app = app;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 

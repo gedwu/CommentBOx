@@ -19,6 +19,7 @@ class Comment extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'author' => $this->user->name,
+//            @todo
 //            'replies' => ReplyResource::collection($this->replies),
             'replies' => [],
             'replies_count' => count($this->replies),
