@@ -1811,6 +1811,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1821,21 +1846,30 @@ __webpack_require__.r(__webpack_exports__);
       success: false,
       total: 0,
       commentNumberToDisplay: 4,
+      replying: false,
+      focusToComment: 0,
+      reply: {
+        user_id: this.$userId,
+        comment_id: '',
+        text: ''
+      },
       comment: {
         id: '',
         user_id: this.$userId,
         text: '',
         author: '',
         created_at: '',
-        visible: 1
+        replies: []
       }
     };
   },
   mounted: function mounted() {
-    console.log('Comments component loaded'); // @todo: delete this
-    // console.log('Curent user ID: '+this.$userId);
-
+    console.log('Comments component loaded');
     this.fetchCommentsList();
+
+    if (this.focusToComment) {
+      document.getElementById('comment-'.this.focusToComment).focus();
+    }
   },
   methods: {
     fetchCommentsList: function fetchCommentsList() {
@@ -1844,7 +1878,8 @@ __webpack_require__.r(__webpack_exports__);
       console.log('Fetching Comments');
       var $this = this;
       axios.get(this.url + this.commentNumberToDisplay).then(function (response) {
-        _this.list = response.data['data'];
+        _this.list = response.data['data']; // console.log(response.data['data']);
+
         _this.total = response.data['total_comments'];
       }).catch(function (error) {
         console.log(error);
@@ -1867,7 +1902,6 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function () {
         self.comment.author = '';
         self.comment.text = '';
-        self.comment.visible = 1;
         self.fetchCommentsList();
       }).catch(function (error) {
         if (error.response.status == 422) {
@@ -1890,6 +1924,61 @@ __webpack_require__.r(__webpack_exports__);
       }).catch(function (error) {
         console.log(error);
       });
+    },
+    prepareReply: function prepareReply(comment) {
+      document.getElementById('component-form').focus();
+      this.replying = true;
+      this.reply.comment_id = comment.id;
+    },
+    createReply: function createReply() {
+      console.log('Creating Reply');
+      this.reply.text = this.comment.text;
+      var self = this;
+      var params = Object.assign({}, self.reply);
+      axios.post('api/reply', params).then(function (response) {
+        if (response.status == 200) {
+          console.log(response.data.success);
+          self.success = response.data.success;
+        }
+      }).then(function () {
+        self.focusToComment = self.reply.comment_id;
+        self.reply.user_id = '';
+        self.reply.comment_id = '';
+        self.reply.text = '';
+        self.comment.text = '';
+        self.fetchCommentsList();
+      }).catch(function (error) {
+        if (error.response.status == 422) {
+          self.errors = error.response.data.errors;
+          console.log(error.response.data.errors);
+        } else {
+          console.log(error);
+        }
+      });
+    },
+    fetchReplies: function fetchReplies(comment_id, index) {
+      var _this2 = this;
+
+      console.log('Fetching Replies');
+      axios.get('api/replies/' + comment_id).then(function (response) {
+        // this.list[index]['replies'] = response.data['data'];
+        _this2.list[_this2.commentNumberToDisplay - index - 1]['replies'] = response.data['data'];
+        console.log(index);
+        console.log(_this2.commentNumberToDisplay - index); // console.log(this.list[index]['replies']);
+      }) // .then(function() {
+      //     document.getElementById('comment-'.comment_id).focus();
+      // })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    getReplies: function getReplies(comment_id, index) {
+      this.fetchReplies(comment_id, index);
+      this.focusToComment = comment_id; // this.fetchCommentsList();
+      // @todo
+      // if (this.focusToComment) {
+      //     document.getElementById('comment-'.this.focusToComment).focus();
+      // }
     }
   }
 });
@@ -36974,36 +37063,74 @@ var render = function() {
               ])
             : _vm._e(),
           _vm._v(" "),
-          _vm._l(_vm.list.slice().reverse(), function(item) {
+          _vm._l(_vm.list.slice().reverse(), function(item, index) {
             return _c(
               "ul",
               { staticClass: "list-group", attrs: { id: "lastComment" } },
               [
-                _c("li", { staticClass: "list-group-item" }, [
-                  _c("span", { staticClass: "circle" }, [
-                    _c("img", {
-                      attrs: { src: _vm.image + item.user_id, alt: "user" }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "title" }, [
-                    _c("a", { attrs: { href: "#" } }, [
-                      _vm._v(_vm._s(item.author) + " ")
+                _c(
+                  "li",
+                  {
+                    staticClass: "list-group-item",
+                    attrs: { id: "comment-" + item.id }
+                  },
+                  [
+                    _c("span", { staticClass: "circle" }, [
+                      _c("img", {
+                        attrs: { src: _vm.image + item.user_id, alt: "user" }
+                      })
                     ]),
                     _vm._v(" "),
-                    _c("time", [_vm._v(" " + _vm._s(item.created_at))]),
+                    _c("span", { staticClass: "title" }, [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v(_vm._s(item.author) + " ")
+                      ]),
+                      _vm._v(" "),
+                      _c("time", [_vm._v(" " + _vm._s(item.created_at))]),
+                      _vm._v(" "),
+                      _c("p", { staticStyle: { "padding-right": "20px" } }, [
+                        _vm._v(_vm._s(item.text) + " ")
+                      ]),
+                      _vm._v(" "),
+                      _c("span", [
+                        _c(
+                          "a",
+                          {
+                            attrs: { href: "#component-form" },
+                            on: {
+                              click: function($event) {
+                                return _vm.prepareReply(item)
+                              }
+                            }
+                          },
+                          [_vm._v("Reply")]
+                        )
+                      ]),
+                      _vm._v(" "),
+                      item.replies_count
+                        ? _c(
+                            "span",
+                            {
+                              staticClass: "float-right",
+                              on: {
+                                click: function($event) {
+                                  return _vm.getReplies(item.id, index)
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        (View " +
+                                  _vm._s(item.replies_count) +
+                                  " Replies)\n                    "
+                              )
+                            ]
+                          )
+                        : _vm._e()
+                    ]),
                     _vm._v(" "),
-                    _c("p", [_vm._v(_vm._s(item.text))])
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "ul",
-                    {
-                      staticClass: "list-inline actions",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("li", {}, [
+                    _c("ul", { staticClass: "list-inline actions" }, [
+                      _c("li", [
                         _c(
                           "a",
                           {
@@ -37022,9 +37149,46 @@ var render = function() {
                           ]
                         )
                       ])
-                    ]
-                  )
-                ])
+                    ]),
+                    _vm._v(" "),
+                    item.replies.length != 0
+                      ? _c(
+                          "div",
+                          _vm._l(item.replies, function(reply) {
+                            return _c("ul", { staticClass: "list-group" }, [
+                              _c("li", { staticClass: "list-group-item" }, [
+                                _c(
+                                  "span",
+                                  { staticClass: "reply-img circle" },
+                                  [
+                                    _c("img", {
+                                      attrs: {
+                                        src: _vm.image + reply.user_id,
+                                        alt: "user"
+                                      }
+                                    })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c("span", { staticClass: "title" }, [
+                                  _c("a", { attrs: { href: "#" } }, [
+                                    _vm._v(" " + _vm._s(reply.author) + " ")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("time", [
+                                    _vm._v(" " + _vm._s(item.created_at))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("p", [_vm._v(_vm._s(reply.text))])
+                                ])
+                              ])
+                            ])
+                          }),
+                          0
+                        )
+                      : _vm._e()
+                  ]
+                )
               ]
             )
           }),
@@ -37036,7 +37200,7 @@ var render = function() {
               on: {
                 submit: function($event) {
                   $event.preventDefault()
-                  return _vm.createComment()
+                  _vm.replying ? _vm.createReply() : _vm.createComment()
                 }
               }
             },
@@ -37052,7 +37216,11 @@ var render = function() {
                     }
                   ],
                   staticClass: "form-control",
-                  attrs: { type: "text", placeholder: "Add a comment" },
+                  attrs: {
+                    type: "text",
+                    id: "component-form",
+                    placeholder: _vm.replying ? "Add a Reply" : "Add a Comment"
+                  },
                   domProps: { value: _vm.comment.text },
                   on: {
                     input: function($event) {
@@ -37071,7 +37239,7 @@ var render = function() {
                   staticClass: "btn btn-sm btn-success",
                   attrs: { type: "submit" }
                 },
-                [_vm._v("Post")]
+                [_vm._v(_vm._s(_vm.replying ? "Reply" : "Comment"))]
               ),
               _vm._v(" "),
               _c(

@@ -47,8 +47,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function comment()
+    public function comments()
     {
-        return $this->hasMany('App\Comment');
+        return $this->hasMany(Comment::class);
+    }
+
+    public function replies(){
+        return $this->hasMany(Reply::class);
     }
 }

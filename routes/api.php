@@ -24,3 +24,8 @@ Route::post('comment', 'CommentController@store');
 
 Route::delete('comment/{id}', 'CommentController@destroy');
 
+
+Route::post('reply', 'CommentRepliesController@store');
+Route::get('replies/{id}', 'CommentRepliesController@index');
+
+

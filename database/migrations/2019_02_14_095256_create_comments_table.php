@@ -15,13 +15,12 @@ class CreateCommentsTable extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->increments('id');
-//            @todo: add Line below
-//            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedInteger('user_id');
             $table->string('text');
-//            @todo: add ->default(1)
-            $table->boolean('visible');
-//            @todo: add ->useCurrent = true;
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
+
         });
     }
 
