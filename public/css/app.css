@@ -10827,7 +10827,7 @@ details[open] summary:after {
   transform: rotate(45deg);
 }
 
-#lastComment {
+.comment-group {
   background-color: #f4f4f4;
 }
 

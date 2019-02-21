@@ -16,16 +16,19 @@
             <div ref="component-up">Virsus</div>
 
             <!--@todo: change id to class-->
-            <ul id="lastComment" class="list-group" v-for="(item, index) in list.slice().reverse()">
-                <li class="list-group-item" :ref="'comment-'+item.id">
+            <ul class="list-group comment-group">
+                <li class="list-group-item" v-for="(item, index) in list.slice().reverse()" :ref="'comment-'+item.id" v-bind:id="'comment-'+item.id">
                       <span class="circle">
                           <img v-bind:src="image + item.user_id" alt="user">
                       </span>
                     <span class="title">
-                          <a href="#">{{item.author}} </a> <time> {{item.created_at}}</time>
-                        <!--@todo:styles-->
-                            <p style="padding-right: 20px;">{{item.text}} </p>
-                        <span>
+                        <span style="width: 100%">
+                            <a href="#">{{item.author}} </a>
+                            <time> {{item.created_at}}</time>
+                            <!--@todo:styles-->
+                            <div style="padding-right: 20px; width: 100%;">{{item.text}} </div>
+                        </span>
+                        <span class="float-left">
                             <a @click="prepareReply(item, index)">Reply</a>
                         </span>
                         <!--@todo:-->
@@ -68,7 +71,6 @@
                 </fieldset>
                 <button type="submit" class="btn btn-sm btn-success">{{replying ? 'Reply' : 'Comment'}}</button>
                 <button type="button" class="btn btn-sm btn-secondary">Cancel</button>
-                <button @click="setFocus()" type="button" class="btn btn-sm btn-danger">Focus</button>
             </form>
         </div>
     </div>
@@ -86,7 +88,7 @@
                 total:0,
                 selectedIndex: null,
                 // @todo: change to 4 after testing
-                commentNumberToDisplay:10,
+                commentNumberToDisplay:20,
                 replying:false,
                 focusToComment:0,
                 focusToReply:0,
@@ -181,26 +183,29 @@
                 let self = this;
                 let params = Object.assign({}, self.reply);
                 let commentId = self.reply.comment_id;
-                // @todo
-                // let index = self.commentNumberToDisplay-self.selectedIndex+1;
+                console.log(params);
                 axios.post('api/reply', params)
                     .then(function (response) {
                         if (response.status == 200) {
                             console.log(response.data.success);
                             self.focusToReply = response.data.reply_id;
-                            console.log('Focus to Reply with ID: '+self.focusToReply);
                             self.success = response.data.success;
+                        } else {
+                            console.log('Nera statuso 200');
                         }
                     })
                     .then(function(){
                         self.focusToComment = self.reply.comment_id;
-                        self.reply.user_id = '';
                         self.reply.comment_id = '';
                         self.reply.text = '';
                         self.comment.text = '';
+                        self.replying = false;
                         self.fetchReplies(commentId, self.selectedIndex);
-                        // self.scrollMeTo('reply-'+self.focusToReply);
-                        self.scrollMeTo('comment-'+self.focusToComment);
+
+                        console.log('FOCUS TO: Comment('+self.focusToComment+') - Reply('+self.focusToReply+')');
+                        let target = '#comment-'+self.focusToComment;
+                        VueScrollTo.scrollTo(target);
+
                     })
                     .catch(function(error){
                         console.log('pagavom error createReply()');
@@ -225,15 +230,6 @@
                     .catch((error) => {
                         console.log(error);
                     });
-            },
-            setFocus: function() {
-                console.log('Focusing');
-                this.scrollMeTo('component-up');
-            },
-            scrollMeTo: function(refName) {
-                var element = this.$refs[refName];
-                var top = element.offsetTop;
-                window.scrollTo(0, top);
             }
         }
     }
