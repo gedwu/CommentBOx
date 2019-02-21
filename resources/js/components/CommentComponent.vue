@@ -1,6 +1,6 @@
 <template>
     <!--@todo:styles-->
-    <div class="col-md-6 offset-md-3" style="margin-top:2em;">
+    <div class="col-md-9 offset-md-3" style="margin-top:2em;">
         <!--@todo:styles-->
         <h6 style="margin-bottom:1em;"> Frontend Task
             <small class="text-muted">for BitDegree Candidates</small>
@@ -13,11 +13,8 @@
                 </summary>
             </details>
 
-            <div ref="component-up">Virsus</div>
-
-            <!--@todo: change id to class-->
             <ul class="list-group comment-group">
-                <li class="list-group-item" v-for="(item, index) in list.slice().reverse()" :ref="'comment-'+item.id" v-bind:id="'comment-'+item.id">
+                <li class="list-group-item comment-item" v-for="(item, index) in list.slice().reverse()" :ref="'comment-'+item.id" v-bind:id="'comment-'+item.id">
                       <span class="circle">
                           <img v-bind:src="image + item.user_id" alt="user">
                       </span>
@@ -31,13 +28,12 @@
                         <span class="float-left">
                             <a @click="prepareReply(item, index)">Reply</a>
                         </span>
-                        <!--@todo:-->
                         <span v-if="item.replies_count" class="float-right" @click="fetchReplies(item.id, index)">
                             (View {{item.replies_count}} Replies)
                         </span>
                       </span>
 
-                    <ul class="list-inline actions">
+                    <ul class="list-inline actions comment-actions">
                         <li>
                             <a @click="deleteComment(item.id)" href="#" title="Delete comment" >
                                 <i class="fa fa-trash-o fa-stack-1x delete-icon-size"></i>
@@ -46,7 +42,7 @@
                     </ul>
                     <div v-if="item.replies.length != 0">
                         <ul class="list-group" v-for="reply in item.replies">
-                            <li class="list-group-item" :ref="'reply-'+reply.id">
+                            <li class="list-group-item reply-item" :ref="'reply-'+reply.id">
                                 <span class="reply-img circle">
                                     <img v-bind:src="image + reply.user_id" alt="user">
                                 </span>
@@ -54,13 +50,19 @@
                                   <a href="#"> {{reply.author}} </a> <time> {{item.created_at}}</time>
                                     <p>{{reply.text}}</p>
                                 </span>
+                                <ul class="list-inline actions reply-actions">
+                                    <li>
+                                        <a @click="deleteReply(reply.id)" href="#" title="Delete Reply" >
+                                            <i class="fa fa-trash-o fa-stack-1x delete-icon-size"></i>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </div>
 
                 </li>
             </ul>
-            <div id="apacia" ref="apacia">Apacia</div>
             <form action="#" @submit.prevent="replying ? createReply() : createComment()">
                 <fieldset class="form-group">
                     <input v-model="comment.text"
@@ -87,8 +89,7 @@
                 success: false,
                 total:0,
                 selectedIndex: null,
-                // @todo: change to 4 after testing
-                commentNumberToDisplay:20,
+                commentNumberToDisplay:4,
                 replying:false,
                 focusToComment:0,
                 focusToReply:0,
@@ -162,6 +163,25 @@
                 let apiUrl =self.url+id;
                 console.log('API URL: '+apiUrl);
                 axios.delete(apiUrl)
+                    .then(function (response) {
+                        console.log(response);
+                        if (response.status == 200) {
+                            console.log('Yra statusas 200');
+                            console.log(response.data.success);
+                            self.success = response.data.success;
+                            self.fetchCommentsList();
+                        } else {
+                            console.log('Nera statuso 200');
+                        }
+                    })
+                    .catch(function(error){
+                        console.log(error);
+                    });
+            },
+            deleteReply: function(id){
+                let self = this;
+                console.log('Deleting reply with id: '+id);
+                axios.delete('api/replies/'+id)
                     .then(function (response) {
                         console.log(response);
                         if (response.status == 200) {

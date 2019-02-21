@@ -10780,11 +10780,20 @@ ul.actions a {
   border-radius: 0 !important;
 }
 
-.list-group .list-group-item ul.actions {
+.list-group .list-group-item.comment-item ul.actions.comment-actions {
   display: none;
 }
 
-.list-group .list-group-item:hover ul.actions {
+.list-group .list-group-item.comment-item:hover ul.actions.comment-actions {
+  display: inherit;
+  list-style: none;
+}
+
+.list-group .list-group-item.reply-item ul.actions.reply-actions {
+  display: none;
+}
+
+.list-group .list-group-item.reply-item:hover ul.actions.reply-actions {
   display: inherit;
   list-style: none;
 }

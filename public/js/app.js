@@ -1841,6 +1841,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1851,8 +1853,7 @@ __webpack_require__.r(__webpack_exports__);
       success: false,
       total: 0,
       selectedIndex: null,
-      // @todo: change to 4 after testing
-      commentNumberToDisplay: 20,
+      commentNumberToDisplay: 4,
       replying: false,
       focusToComment: 0,
       focusToReply: 0,
@@ -1921,6 +1922,24 @@ __webpack_require__.r(__webpack_exports__);
       var apiUrl = self.url + id;
       console.log('API URL: ' + apiUrl);
       axios.delete(apiUrl).then(function (response) {
+        console.log(response);
+
+        if (response.status == 200) {
+          console.log('Yra statusas 200');
+          console.log(response.data.success);
+          self.success = response.data.success;
+          self.fetchCommentsList();
+        } else {
+          console.log('Nera statuso 200');
+        }
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
+    deleteReply: function deleteReply(id) {
+      var self = this;
+      console.log('Deleting reply with id: ' + id);
+      axios.delete('api/replies/' + id).then(function (response) {
         console.log(response);
 
         if (response.status == 200) {
@@ -37038,7 +37057,7 @@ var render = function() {
   return _c(
     "div",
     {
-      staticClass: "col-md-6 offset-md-3",
+      staticClass: "col-md-9 offset-md-3",
       staticStyle: { "margin-top": "2em" }
     },
     [
@@ -37068,8 +37087,6 @@ var render = function() {
             ])
           : _vm._e(),
         _vm._v(" "),
-        _c("div", { ref: "component-up" }, [_vm._v("Virsus")]),
-        _vm._v(" "),
         _c(
           "ul",
           { staticClass: "list-group comment-group" },
@@ -37079,7 +37096,7 @@ var render = function() {
               {
                 ref: "comment-" + item.id,
                 refInFor: true,
-                staticClass: "list-group-item",
+                staticClass: "list-group-item comment-item",
                 attrs: { id: "comment-" + item.id }
               },
               [
@@ -37142,27 +37159,31 @@ var render = function() {
                     : _vm._e()
                 ]),
                 _vm._v(" "),
-                _c("ul", { staticClass: "list-inline actions" }, [
-                  _c("li", [
-                    _c(
-                      "a",
-                      {
-                        attrs: { href: "#", title: "Delete comment" },
-                        on: {
-                          click: function($event) {
-                            return _vm.deleteComment(item.id)
+                _c(
+                  "ul",
+                  { staticClass: "list-inline actions comment-actions" },
+                  [
+                    _c("li", [
+                      _c(
+                        "a",
+                        {
+                          attrs: { href: "#", title: "Delete comment" },
+                          on: {
+                            click: function($event) {
+                              return _vm.deleteComment(item.id)
+                            }
                           }
-                        }
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-trash-o fa-stack-1x delete-icon-size"
-                        })
-                      ]
-                    )
-                  ])
-                ]),
+                        },
+                        [
+                          _c("i", {
+                            staticClass:
+                              "fa fa-trash-o fa-stack-1x delete-icon-size"
+                          })
+                        ]
+                      )
+                    ])
+                  ]
+                ),
                 _vm._v(" "),
                 item.replies.length != 0
                   ? _c(
@@ -37174,7 +37195,7 @@ var render = function() {
                             {
                               ref: "reply-" + reply.id,
                               refInFor: true,
-                              staticClass: "list-group-item"
+                              staticClass: "list-group-item reply-item"
                             },
                             [
                               _c("span", { staticClass: "reply-img circle" }, [
@@ -37196,7 +37217,39 @@ var render = function() {
                                 ]),
                                 _vm._v(" "),
                                 _c("p", [_vm._v(_vm._s(reply.text))])
-                              ])
+                              ]),
+                              _vm._v(" "),
+                              _c(
+                                "ul",
+                                {
+                                  staticClass:
+                                    "list-inline actions reply-actions"
+                                },
+                                [
+                                  _c("li", [
+                                    _c(
+                                      "a",
+                                      {
+                                        attrs: {
+                                          href: "#",
+                                          title: "Delete Reply"
+                                        },
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.deleteReply(reply.id)
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass:
+                                            "fa fa-trash-o fa-stack-1x delete-icon-size"
+                                        })
+                                      ]
+                                    )
+                                  ])
+                                ]
+                              )
                             ]
                           )
                         ])
@@ -37209,10 +37262,6 @@ var render = function() {
           }),
           0
         ),
-        _vm._v(" "),
-        _c("div", { ref: "apacia", attrs: { id: "apacia" } }, [
-          _vm._v("Apacia")
-        ]),
         _vm._v(" "),
         _c(
           "form",

@@ -27,9 +27,21 @@ class CommentRepliesController extends Controller
         $reply->comment_id = $request->input('comment_id');
         $reply->text = $request->input('text');
 
+        $return = ['success' => 'Reply Create Failed', 'reply_id' => $reply->id];
         if($reply->save()) {
             $return = ['success' => 'Reply Created', 'reply_id' => $reply->id];
-            return response()->json($return);
         }
+        return response()->json($return);
+    }
+
+    public function destroy($id)
+    {
+        $reply = Reply::findOrFail($id);
+
+        $return = ['success' => 'Reply Delete Failed'];
+        if ($reply->delete()) {
+            $return = ['success' => 'Reply Deleted'];
+        }
+        return response()->json($return);
     }
 }
