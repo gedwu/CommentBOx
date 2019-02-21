@@ -27,9 +27,10 @@
                                 <div style="padding-right: 20px; width: 100%;">{{item.text}} </div>
                             </span>
                             <span class="float-left">
-                                <a @click="prepareReply(item, index)">Reply</a>
+                                <!--@todo: styles-->
+                                <a @click="prepareReply(item, index)" style="cursor: pointer;">Reply</a>
                             </span>
-                            <span v-if="item.replies_count" class="float-right" @click="fetchReplies(item.id, index)">
+                            <span v-if="item.replies_count" class="float-right" @click="fetchReplies(item.id, index)" style="cursor: pointer;">
                                 (View {{item.replies_count}} Replies)
                             </span>
                         </span>
