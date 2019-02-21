@@ -56,10 +56,11 @@ class CommentController extends Controller
     {
         $comment = Comment::findOrFail($id);
 
-        $return = ['success' => 'Comment Deleted'];
+        $return = ['success' => 'Comment Delete Failed'];
         if ($comment->delete()) {
-            return response()->json($return);
+            $return = ['success' => 'Comment Deleted'];
         }
+        return response()->json($return);
     }
 
 //    @todo: delete after testing

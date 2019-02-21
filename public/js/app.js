@@ -1918,11 +1918,18 @@ __webpack_require__.r(__webpack_exports__);
     deleteComment: function deleteComment(id) {
       var self = this;
       console.log('Deleting comment with id: ' + id);
-      axios.delete('api/comment/' + id).then(function (response) {
+      var apiUrl = self.url + id;
+      console.log('API URL: ' + apiUrl);
+      axios.delete(apiUrl).then(function (response) {
+        console.log(response);
+
         if (response.status == 200) {
+          console.log('Yra statusas 200');
           console.log(response.data.success);
           self.success = response.data.success;
           self.fetchCommentsList();
+        } else {
+          console.log('Nera statuso 200');
         }
       }).catch(function (error) {
         console.log(error);

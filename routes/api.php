@@ -17,14 +17,15 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('comments', 'CommentController@index');
+//Route::get('comments', 'CommentController@index');
+
+// Comments
 Route::get('comments/{id}', 'CommentController@index');
-
 Route::post('comment', 'CommentController@store');
+Route::delete('comments/{id}', 'CommentController@destroy');
 
-Route::delete('comment/{id}', 'CommentController@destroy');
 
-
+// Replies
 Route::post('reply', 'CommentRepliesController@store');
 Route::get('replies/{id}', 'CommentRepliesController@index');
 
