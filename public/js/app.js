@@ -1843,6 +1843,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -37096,94 +37098,99 @@ var render = function() {
               {
                 ref: "comment-" + item.id,
                 refInFor: true,
-                staticClass: "list-group-item comment-item",
+                staticClass: "list-group-item",
                 attrs: { id: "comment-" + item.id }
               },
               [
-                _c("span", { staticClass: "circle" }, [
-                  _c("img", {
-                    attrs: { src: _vm.image + item.user_id, alt: "user" }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "title" }, [
-                  _c("span", { staticStyle: { width: "100%" } }, [
-                    _c("a", { attrs: { href: "#" } }, [
-                      _vm._v(_vm._s(item.author) + " ")
-                    ]),
-                    _vm._v(" "),
-                    _c("time", [_vm._v(" " + _vm._s(item.created_at))]),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticStyle: { "padding-right": "20px", width: "100%" }
-                      },
-                      [_vm._v(_vm._s(item.text) + " ")]
-                    )
+                _c("div", { staticClass: "comment-item" }, [
+                  _c("span", { staticClass: "circle" }, [
+                    _c("img", {
+                      attrs: { src: _vm.image + item.user_id, alt: "user" }
+                    })
                   ]),
                   _vm._v(" "),
-                  _c("span", { staticClass: "float-left" }, [
-                    _c(
-                      "a",
-                      {
-                        on: {
-                          click: function($event) {
-                            return _vm.prepareReply(item, index)
-                          }
-                        }
-                      },
-                      [_vm._v("Reply")]
-                    )
-                  ]),
-                  _vm._v(" "),
-                  item.replies_count
-                    ? _c(
-                        "span",
+                  _c("span", { staticClass: "title " }, [
+                    _c("span", { staticStyle: { width: "100%" } }, [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v(_vm._s(item.author) + " ")
+                      ]),
+                      _vm._v(" "),
+                      _c("time", [_vm._v(" " + _vm._s(item.created_at))]),
+                      _vm._v(" "),
+                      _c(
+                        "div",
                         {
-                          staticClass: "float-right",
-                          on: {
-                            click: function($event) {
-                              return _vm.fetchReplies(item.id, index)
-                            }
+                          staticStyle: {
+                            "padding-right": "20px",
+                            width: "100%"
                           }
                         },
-                        [
-                          _vm._v(
-                            "\n                        (View " +
-                              _vm._s(item.replies_count) +
-                              " Replies)\n                    "
-                          )
-                        ]
+                        [_vm._v(_vm._s(item.text) + " ")]
                       )
-                    : _vm._e()
-                ]),
-                _vm._v(" "),
-                _c(
-                  "ul",
-                  { staticClass: "list-inline actions comment-actions" },
-                  [
-                    _c("li", [
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "float-left" }, [
                       _c(
                         "a",
                         {
-                          attrs: { href: "#", title: "Delete comment" },
                           on: {
                             click: function($event) {
-                              return _vm.deleteComment(item.id)
+                              return _vm.prepareReply(item, index)
                             }
                           }
                         },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-trash-o fa-stack-1x delete-icon-size"
-                          })
-                        ]
+                        [_vm._v("Reply")]
                       )
-                    ])
-                  ]
-                ),
+                    ]),
+                    _vm._v(" "),
+                    item.replies_count
+                      ? _c(
+                          "span",
+                          {
+                            staticClass: "float-right",
+                            on: {
+                              click: function($event) {
+                                return _vm.fetchReplies(item.id, index)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                            (View " +
+                                _vm._s(item.replies_count) +
+                                " Replies)\n                        "
+                            )
+                          ]
+                        )
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "ul",
+                    { staticClass: "list-inline actions comment-actions" },
+                    [
+                      _c("li", [
+                        _c(
+                          "a",
+                          {
+                            attrs: { href: "#", title: "Delete comment" },
+                            on: {
+                              click: function($event) {
+                                return _vm.deleteComment(item.id)
+                              }
+                            }
+                          },
+                          [
+                            _c("i", {
+                              staticClass:
+                                "fa fa-trash-o fa-stack-1x delete-icon-size"
+                            })
+                          ]
+                        )
+                      ])
+                    ]
+                  )
+                ]),
                 _vm._v(" "),
                 item.replies.length != 0
                   ? _c(

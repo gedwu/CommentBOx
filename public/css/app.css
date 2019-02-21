@@ -10780,20 +10780,20 @@ ul.actions a {
   border-radius: 0 !important;
 }
 
-.list-group .list-group-item.comment-item ul.actions.comment-actions {
+.comment-item ul.comment-actions {
   display: none;
 }
 
-.list-group .list-group-item.comment-item:hover ul.actions.comment-actions {
+.comment-item:hover ul.comment-actions {
   display: inherit;
   list-style: none;
 }
 
-.list-group .list-group-item.reply-item ul.actions.reply-actions {
+.reply-item ul.reply-actions {
   display: none;
 }
 
-.list-group .list-group-item.reply-item:hover ul.actions.reply-actions {
+.reply-item:hover ul.reply-actions {
   display: inherit;
   list-style: none;
 }

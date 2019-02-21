@@ -14,32 +14,34 @@
             </details>
 
             <ul class="list-group comment-group">
-                <li class="list-group-item comment-item" v-for="(item, index) in list.slice().reverse()" :ref="'comment-'+item.id" v-bind:id="'comment-'+item.id">
-                      <span class="circle">
-                          <img v-bind:src="image + item.user_id" alt="user">
-                      </span>
-                    <span class="title">
-                        <span style="width: 100%">
-                            <a href="#">{{item.author}} </a>
-                            <time> {{item.created_at}}</time>
-                            <!--@todo:styles-->
-                            <div style="padding-right: 20px; width: 100%;">{{item.text}} </div>
+                <li class="list-group-item" v-for="(item, index) in list.slice().reverse()" :ref="'comment-'+item.id" v-bind:id="'comment-'+item.id">
+                      <div class="comment-item">
+                          <span class="circle">
+                            <img v-bind:src="image + item.user_id" alt="user">
+                          </span>
+                          <span class="title ">
+                            <span style="width: 100%">
+                                <a href="#">{{item.author}} </a>
+                                <time> {{item.created_at}}</time>
+                                <!--@todo:styles-->
+                                <div style="padding-right: 20px; width: 100%;">{{item.text}} </div>
+                            </span>
+                            <span class="float-left">
+                                <a @click="prepareReply(item, index)">Reply</a>
+                            </span>
+                            <span v-if="item.replies_count" class="float-right" @click="fetchReplies(item.id, index)">
+                                (View {{item.replies_count}} Replies)
+                            </span>
                         </span>
-                        <span class="float-left">
-                            <a @click="prepareReply(item, index)">Reply</a>
-                        </span>
-                        <span v-if="item.replies_count" class="float-right" @click="fetchReplies(item.id, index)">
-                            (View {{item.replies_count}} Replies)
-                        </span>
-                      </span>
+                          <ul class="list-inline actions comment-actions">
+                              <li>
+                                  <a @click="deleteComment(item.id)" href="#" title="Delete comment" >
+                                      <i class="fa fa-trash-o fa-stack-1x delete-icon-size"></i>
+                                  </a>
+                              </li>
+                          </ul>
+                      </div>
 
-                    <ul class="list-inline actions comment-actions">
-                        <li>
-                            <a @click="deleteComment(item.id)" href="#" title="Delete comment" >
-                                <i class="fa fa-trash-o fa-stack-1x delete-icon-size"></i>
-                            </a>
-                        </li>
-                    </ul>
                     <div v-if="item.replies.length != 0">
                         <ul class="list-group" v-for="reply in item.replies">
                             <li class="list-group-item reply-item" :ref="'reply-'+reply.id">
