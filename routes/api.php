@@ -17,17 +17,16 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Route::get('comments', 'CommentController@index');
+Route::middleware('auth:api')->group(function () {
+    // Comments
+    Route::get('comments/{id}', 'CommentController@index');
+    Route::post('comment', 'CommentController@store');
+    Route::delete('comments/{id}', 'CommentController@destroy');
 
-// Comments
-Route::get('comments/{id}', 'CommentController@index');
-Route::post('comment', 'CommentController@store');
-Route::delete('comments/{id}', 'CommentController@destroy');
-
-
-// Replies
-Route::post('reply', 'CommentRepliesController@store');
-Route::get('replies/{id}', 'CommentRepliesController@index');
-Route::delete('replies/{id}', 'CommentRepliesController@destroy');
+    // Replies
+    Route::post('reply', 'CommentRepliesController@store');
+    Route::get('replies/{id}', 'CommentRepliesController@index');
+    Route::delete('replies/{id}', 'CommentRepliesController@destroy');
+});
 
 
