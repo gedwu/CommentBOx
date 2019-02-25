@@ -62,13 +62,4 @@ class CommentController extends Controller
         }
         return response()->json($return);
     }
-
-//    @todo: delete after testing
-    public function show(Comment $comment) {
-        $user = \App\User::findOrFail(1);
-//        dd(gettype($user->comments));
-//        dd($user->comments->count());
-//        dd($user->comments);
-        dd($comment->user);
-    }
 }
